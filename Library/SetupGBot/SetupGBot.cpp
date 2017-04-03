@@ -115,7 +115,7 @@ void SetupGBot::Setup() {
     delay(500);
     Serial.print(".");
     OLED.clear();
-    OLED.drawXbm(34,30, 60, 36, WiFi_Logo_bits);
+    OLED.drawXbm(34,25, 60, 36, WiFi_Logo_bits);
     OLED.setFont(ArialMT_Plain_10);
     OLED.setTextAlignment(TEXT_ALIGN_LEFT);
     OLED.drawString(0, 0,"Connecting to:");
@@ -133,7 +133,7 @@ void SetupGBot::Setup() {
     OLED.drawXbm(0, 0, wifi_connect_width, wifi_connect_height, wifi_connect_bits );
     OLED.setFont(ArialMT_Plain_16);
     OLED.setTextAlignment(TEXT_ALIGN_LEFT);
-    OLED.drawString(35, 10,"Connected !!");
+    OLED.drawString(20, 25,"Connected !!");
     OLED.display();
     Serial.println("WiFi connected");
     Serial.println("IP address: ");

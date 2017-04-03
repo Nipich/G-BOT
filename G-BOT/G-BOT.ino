@@ -16,9 +16,6 @@ SSD1306  display(0x3c, 4, 5);  // SDA:D2,SCL:D1
 WeatherClient weather;
 Ticker ticker;
 
-//void State1(int x, int y);
-//void State2(int x, int y);
-
 int i=0;
 
 // flag changed in the ticker function every 10 minutes
@@ -47,9 +44,13 @@ void loop() {
       weather.updateWeatherData(GBot.forecastApiKey, GBot.latitude, GBot.longitude);
     }
     State1();
-    delay(3000);
+    delay(2000);
     State2();
-    delay(1000);
+    delay(1500);
+    State3();
+    delay(2000);
+    State4();
+    delay(1500);
   }
   if(Serial.available()){
     display.clear();
@@ -69,7 +70,7 @@ void State1() {
    display.setFont(ArialMT_Plain_16);
    display.drawString(64 , 14 , String(weather.getCurrentTemp()) + "C");
    display.setFont(ArialMT_Plain_16);
-   display.drawString(64 , 28 , String(weather.getMinTempToday()) + "C/" + String(weather.getMaxTempToday()) + "C");
+   display.drawString(64 , 30 , String(weather.getMinTempToday()) + "C/" + String(weather.getMaxTempToday()) + "C");
    display.setFont(ArialMT_Plain_10);
    display.drawString(15 , 48 , GBot.location);
    display.display();
@@ -111,6 +112,7 @@ const char* getIconFromString(String icon) {
 
 void State2() {
   display.clear();
+  display.drawString(0 , 0 ,"Today");
   if (getIconFromString(weather.getCurrentIcon())==clear_day_bits) {
     display.drawXbm(0,0, 128, 64,happy_Logo_bits); 
   } 
@@ -118,7 +120,7 @@ void State2() {
     display.drawXbm(0,0, 128, 64,love_bits);   
   } 
   else if (getIconFromString(weather.getCurrentIcon()) == rain_bits) {
-    display.drawXbm(0,0, 128, 64,sad_bits);  
+    display.drawXbm(0,0, 128, 64,angry_bits);  
   } 
   else if (getIconFromString(weather.getCurrentIcon()) == snow_bits) {
     display.drawXbm(0,0, 128, 64,love_bits);   
@@ -139,6 +141,55 @@ void State2() {
     display.drawXbm(0,0, 128, 64,what_bits);  
   } 
   else if (getIconFromString(weather.getCurrentIcon()) == partly_cloudy_night_bits) {
+    display.drawXbm(0,0, 128, 64,what_bits);  
+  } 
+  display.display();  
+}
+
+void State3() {
+   display.clear();
+   display.drawString(60 , 0 ,"Tomorrow");
+   display.drawXbm(0,0, 50, 50, getIconFromString(weather.getIconTomorrow()));
+   display.setFont(ArialMT_Plain_16);
+   display.drawString(59 , 14 , String(weather.getSummaryTomorrow()));
+   display.setFont(ArialMT_Plain_16);
+   display.drawString(59 , 30 , String(weather.getMinTempTomorrow()) + "C/" + String(weather.getMaxTempTomorrow()) + "C");
+   display.setFont(ArialMT_Plain_10);
+   display.drawString(15 , 48 , GBot.location);
+   display.display();
+}
+
+void State4() {
+  display.clear();
+  display.drawString(0 , 0 ,"Tomorrow");
+  if (getIconFromString(weather.getIconTomorrow())==clear_day_bits) {
+    display.drawXbm(0,0, 128, 64,happy_Logo_bits); 
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == clear_night_bits) {
+    display.drawXbm(0,0, 128, 64,love_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == rain_bits) {
+    display.drawXbm(0,0, 128, 64,angry_bits);  
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == snow_bits) {
+    display.drawXbm(0,0, 128, 64,love_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == sleet_bits) {
+    display.drawXbm(0,0, 128, 64,angry_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == wind_bits) {
+    display.drawXbm(0,0, 128, 64,normal_Logo_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == fog_bits) {
+    display.drawXbm(0,0, 128, 64,bored_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == cloudy_bits) {
+    display.drawXbm(0,0, 128, 64,normal_Logo_bits);   
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == partly_cloudy_day_bits) {
+    display.drawXbm(0,0, 128, 64,what_bits);  
+  } 
+  else if (getIconFromString(weather.getIconTomorrow()) == partly_cloudy_night_bits) {
     display.drawXbm(0,0, 128, 64,what_bits);  
   } 
   display.display();  
