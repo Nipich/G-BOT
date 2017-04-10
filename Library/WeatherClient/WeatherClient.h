@@ -47,7 +47,7 @@ class WeatherClient {
     String getKey(String line);
   
   public:
-    void updateWeatherData(String apiKey, double lat, double lon); 
+    void updateWeatherData(String apiKey, String lat, String lon); 
     void setUnits(String units);
     int getCurrentTemp(void);
     int getCurrentHumidity(void);

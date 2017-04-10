@@ -26,7 +26,7 @@ See more at http://blog.squix.ch
 #include "WeatherClient.h"
 #include <ESP8266WiFi.h>
 
-void WeatherClient::updateWeatherData(String apiKey, double lat, double lon) {
+void WeatherClient::updateWeatherData(String apiKey, String lat, String lon) {
   WiFiClient client;
   const int httpPort = 80;
   if (!client.connect("217.26.50.8", httpPort)) {
@@ -35,7 +35,7 @@ void WeatherClient::updateWeatherData(String apiKey, double lat, double lon) {
   }
   
   // We now create a URI for the request
-  String url = "/rest/weather?apiKey=" + apiKey + "&lat=" + String(lat) + "&lon=" + String(lon) + "&units=" + myUnits;
+  String url = "/rest/weather?apiKey=" + apiKey + "&lat=" + lat + "&lon=" + lon + "&units=" + myUnits;
   
   Serial.print("Requesting URL: ");
   Serial.println(url);

@@ -19,8 +19,8 @@ class SetupGBot{
 	public:
 		String location;
 		String forecastApiKey;
-		double latitude;
-		double longitude;
+		String latitude;
+		String longitude;
 		SetupGBot();
 		boolean eeprom_is_addr_ok(int addr);
 		boolean eeprom_write_bytes(int startAddr, const byte* array, int numBytes);
@@ -31,6 +31,7 @@ class SetupGBot{
 		void Reconnect();
 		void ChangeAPIKey();
 		void ChangeLocations();
+		void ChangeLocationsFromCallBack(String data1,String data2,String data3);
 
 	
 };

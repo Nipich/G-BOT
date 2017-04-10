@@ -83,29 +83,29 @@ void SetupGBot::Setup() {
 
   Serial.print("Reading string from address 5: ");
   eeprom_read_string(5, buf, 30); //read address 5 store to buf
-    
+  Serial.println(buf);  
   Serial.print("Reading string from address 36: ");
   eeprom_read_string(36, buf2, 30); //read address 36 store to buf2
-
+  Serial.println(buf2); 
   Serial.print("Reading string from address 80: ");
   eeprom_read_string(80, buf3, 15); //read address 80 store to buf3
-    
+  Serial.println(buf3);   
   Serial.print("Reading string from address 90: ");
   eeprom_read_string(96, buf4, 15); //read address 90 store to buf4
-
+  Serial.println(buf4); 
   Serial.print("Reading string from address 100: ");
   eeprom_read_string(111, buf5, 30); //read address 100 store to bu5
-
+  Serial.println(buf5); 
   Serial.print("Reading string from address 140: ");
   eeprom_read_string(150, buf6, 40); //read address 140 store to buf6
+  Serial.println(buf6); 
 
   ssid=buf; //set ssid
   password=buf2; //set password
-  latitude = atof(buf3); //set latitude
-  longitude = atof(buf4); //set longitude
+  latitude = buf3; //set latitude
+  longitude = buf4; //set longitude
   location = buf5; //set location
   forecastApiKey=buf6; //set API
-  
   
   // We start by connecting to a WiFi network
   Serial.print("Connecting to ");
@@ -160,8 +160,7 @@ void SetupGBot::Recieve() {
         }
         else if(data4=="api"){
           ChangeAPIKey();
-        }
-          
+        }    
  }           
 
 void SetupGBot::Reconnect(){
@@ -212,8 +211,38 @@ void SetupGBot::Reconnect(){
 }
 
 void SetupGBot::ChangeLocations(){
-  latitude = data1.toFloat();
-  longitude = data2.toFloat();
+  latitude = data1;
+  longitude = data2;
+  location = data3;
+  for (int i = 80; i < 140; i++)
+  {
+    EEPROM.write(i, 0);   //clear eeprom 
+  }
+  strcpy(buf, data1.c_str()); //copy latitude to buf
+  eeprom_write_string(80, buf);  //write buf to eeprom address 80
+  strcpy(buf2, data2.c_str()); //copy longitude to buf2
+  eeprom_write_string(96, buf2); // write buf to eeprom address 96
+  strcpy(buf5, data3.c_str()); //copy location to buf5
+  eeprom_write_string(111, buf5); // write buf to eeprom address 111
+  
+  OLED.clear();
+  OLED.drawXbm(0,40, locations_width, locations_height, locations_bits );
+  OLED.drawXbm(110,40, locations_width, locations_height, locations_bits );
+  OLED.setFont(ArialMT_Plain_16);
+  OLED.setTextAlignment(TEXT_ALIGN_LEFT);
+  OLED.drawString(0,0,"Change Location");
+  OLED.setFont(ArialMT_Plain_16);
+  OLED.setTextAlignment(TEXT_ALIGN_LEFT);
+  OLED.drawString(20, 30," Complete!!");
+  OLED.display();
+  delay(2000);
+  OLED.clear();
+  OLED.display();
+}
+
+void SetupGBot::ChangeLocationsFromCallBack(String data1,String data2,String data3){
+  latitude = data1;
+  longitude = data2;
   location = data3;
   for (int i = 80; i < 140; i++)
   {
