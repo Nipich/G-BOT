@@ -1,14 +1,12 @@
 #include <ESP8266WiFi.h>
 #include "WeatherClient.h"
-#include <Wire.h>
 #include <Ticker.h>
 #include "SSD1306.h"
 #include "icons.h"
-#include <EEPROM.h>
+#include <PubSubClient.h>
 #include "SetupGBot.h"
 
 SetupGBot GBot;
-
 
 // Initialize the oled display for address 0x3c
 // sda-pin=GPIO0 and scl-pin=GPIO2
@@ -16,13 +14,23 @@ SSD1306  display(0x3c, 4, 5);  // SDA:D2,SCL:D1
 WeatherClient weather;
 Ticker ticker;
 
-int i=0;
+const char *mqttServ = "m12.cloudmqtt.com";
+const int   mqttPort = 14711;
+const char *mqttUser = "vgzfmnpz";
+const char *mqttPass = "vw7yGbp68jHc";
+
+const char *subTopic = "/Location";  // subscribe 
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = true;
 
+WiFiClient espClient;
+PubSubClient client(espClient);
+
 void setup() {
   Serial.begin(115200);
+  client.setServer(mqttServ, mqttPort);
+  client.setCallback(callback);
   display.init();
   GBot.Setup();
   ticker.attach(60 * 10, setReadyForWeatherUpdate);
@@ -31,12 +39,67 @@ void setup() {
   display.display();
 }
 
+void callback(char* topic, byte* payload, unsigned int length) {
+  String readString="";
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    char msgIN=((char)payload[i]);
+    Serial.print(msgIN);
+    readString += msgIN;
+  }
+  String msg1="";
+  String msg2="";
+  String msg3="";
+  int lastIndex=0;
+  int i=0;
+  int size=readString.length();
+  for (i = 0; i < readString.length(); i++) {
+    if (readString.substring(i, i+1) == ",") {
+      msg1 = readString.substring(0, i);
+      lastIndex=i+1;
+       for (i = lastIndex; i < readString.length(); i++) {
+        if (readString.substring(i, i+1) == ","){
+          msg2 = readString.substring(lastIndex, i);
+          msg3 = readString.substring(i+1,size);
+        }
+       }
+       break;
+    }
+  }
+ GBot.ChangeLocationsFromCallBack(msg1,msg2,msg3);
+ setReadyForWeatherUpdate();
+}
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect(subTopic, mqttUser, mqttPass)) {
+      Serial.println("connected");
+      // ... and resubscribe
+      client.subscribe(subTopic);
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
 void loop() {
-  
   if(WiFi.status() != WL_CONNECTED){
     DisplayLostConnect();
   }
   if(WiFi.status() == WL_CONNECTED){
+     if (!client.connected()) {
+      reconnect();
+     }
+    client.loop();
     display.clear();
     if (readyForWeatherUpdate==true)// update the weather information every 10 mintues becaue forecast.io only allows 1000 calls per day
     {
