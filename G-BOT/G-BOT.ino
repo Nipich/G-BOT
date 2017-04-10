@@ -14,10 +14,10 @@ SSD1306  display(0x3c, 4, 5);  // SDA:D2,SCL:D1
 WeatherClient weather;
 Ticker ticker;
 
-const char *mqttServ = "m12.cloudmqtt.com";
-const int   mqttPort = 14711;
-const char *mqttUser = "vgzfmnpz";
-const char *mqttPass = "vw7yGbp68jHc";
+const char *mqttServ = "Server";
+const int   mqttPort = 0000;//port
+const char *mqttUser = "user";
+const char *mqttPass = "pass";
 
 const char *subTopic = "/Location";  // subscribe 
 
